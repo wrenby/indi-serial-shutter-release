@@ -10,12 +10,7 @@ LIST(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../cmake_modules/")
 
 # FIND OUR REQUIRED PACKAGES
 find_package(INDI REQUIRED)
-# find_package(ZLIB REQUIRED)
-# find_package(GSL REQUIRED)
 find_package(fmt REQUIRED)
-# find_package(Threads REQUIRED)
-# find_package(JPEG REQUIRED)
-find_package(LibRaw REQUIRED)
 
 
 # these will be used to set the version number in config.h and our driver's xml file
