@@ -98,6 +98,10 @@ void SerialShutterReleaseCCD::ISGetProperties(const char * dev) {
 }
 
 bool SerialShutterReleaseCCD::Connect() {
+    // CCD drivers have to report some kind of capture format
+    CaptureFormat format = {"FORMAT_NONE", "None", 8, false};
+    addCaptureFormat(format);
+
     if (PortTP.tp[0].text && strlen(PortTP.tp[0].text) > 0) {
         fd = open(PortTP.tp[0].text, O_RDWR | O_NOCTTY);
         if (fd != -1) {
