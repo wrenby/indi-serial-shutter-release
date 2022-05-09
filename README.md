@@ -10,13 +10,12 @@ The way I've programmed this uses a feature which is not included in the POSIX s
 
 # Building
 
-Requires the [fmt](https://fmt.dev/latest/index.html) string formatting library, which is likely available from your system's package repositories. On Arch, the package is `fmt` from the `extra` repository. On Ubuntu, the package is `libfmt-dev` from the `universe` repository:
+Requires INDI, the [`fmt`](https://fmt.dev/latest/index.html) string formatting library and the [`cfitsio`](https://heasarc.gsfc.nasa.gov/fitsio/) FITS image processing library, which are likely both available from your system's package repositories:
 
-```
-sudo add-apt-repository universe
-sudo apt update
-sudo apt install libfmt-dev
-```
+| OS            | Package Names |
+|---------------|---------------|
+| Arch          | `sudo pacman -S --needed libindi fmt cfitsio` |
+| Debian/Ubuntu | `sudo apt install libindi-dev libfmt-dev libcfitsio-dev` |
 
 The source can be downloaded, compiled, and installed with the following commands:
 
