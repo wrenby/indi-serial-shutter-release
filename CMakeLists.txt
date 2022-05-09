@@ -6,11 +6,11 @@ include(GNUInstallDirs)
 
 # add our cmake modules folder
 LIST(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake_modules/")
-LIST(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../cmake_modules/")
 
 # FIND OUR REQUIRED PACKAGES
 find_package(INDI REQUIRED)
-find_package(fmt REQUIRED)
+find_package(fmt REQUIRED) # string formatting
+find_package(CFITSIO REQUIRED) # FITS image format -- even though we don't use it directly,
 
 
 # these will be used to set the version number in config.h and our driver's xml file
