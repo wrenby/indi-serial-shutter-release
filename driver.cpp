@@ -99,30 +99,26 @@ void SerialShutterReleaseCCD::ISGetProperties(const char * dev) {
 
 bool SerialShutterReleaseCCD::Connect() {
     if (PortTP.tp[0].text && strlen(PortTP.tp[0].text) > 0) {
-        // read-write capabilities shouldn't matter since i'm not actually doing any reading or writing, just flipping the RTS flag back and forth
-        // however, O_NOCTTY is really important, as it prevents creation of a virtual terminal that thinks it's smart enough to handle this flag for us
         fd = open(PortTP.tp[0].text, O_RDWR | O_NOCTTY);
         if (fd != -1) {
-            return true;
+            termios tty;
+            if (tcgetattr(fd, &tty) != -1) {
+                tty.c_cflag &= CRTSCTS; // enable manual control over RTS/CTS flags
+                if (tcsetattr(fd, TCSANOW, &tty) != -1) {
+                    if (ioctl(fd, TIOCMBIC, &RTS) != -1) {
+                        return true;
+                    } else {
+                        LOG_ERROR(fmt::format("Failed to clear RTS bit at start of shutter release connection: {}", strerror(errno)).c_str());
+                    }
+                } else {
+                    LOG_ERROR(fmt::format("Failed to set tty attributes for shutter release connection: {}", strerror(errno)).c_str());
+                }
+            } else {
+                LOG_ERROR(fmt::format("Failed to get tty attributes for shutter release connection: {}", strerror(errno)).c_str());
+            }
         } else {
             LOG_ERROR(fmt::format("Failed to connect to shutter release port {}: {}", PortTP.tp[0].text, strerror(errno)).c_str());
         }
-
-        termios tty;
-        if (tcgetattr(fd, &tty) == -1) {
-            LOG_ERROR(fmt::format("Failed to get tty attributes for shutter release connection: {}", strerror(errno)).c_str());
-            return false;
-        }
-        tty.c_cflag &= CRTSCTS; // enable manual control over RTS/CTS flags
-        if (tcsetattr(fd, TCSANOW, &tty) == -1) {
-            LOG_ERROR(fmt::format("Failed to set tty attributes for shutter release connection: {}", strerror(errno)).c_str());
-            return false;
-        }
-        if (ioctl(fd, TIOCMBIC, &RTS) == -1) {
-            LOG_ERROR(fmt::format("Failed to clear RTS bit at start of shutter release connection: {}", strerror(errno)).c_str());
-            return false;
-        }
-        ioctl(fd, TIOCMBIC, &RTS); // no guarantees that RTS starts disabled
     } else {
         LOG_ERROR("Failed to connect: need to specify a shutter release port");
     }
